@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            background-color: #f0f9ff;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        
+        .word-card {
+            width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .word-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .emoji {
+            font-size: 60px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .word {
+            color: #2b7a78;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .pronunciation {
+            color: #3aafa9;
+            font-size: 18px;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .translation {
+            color: #17252a;
+            font-size: 24px;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .example {
+            background-color: #def2f1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        
+        <div class="word-card" style="background-color: #FFF3E0">
+            <div class="emoji">🐶</div>
+            <div class="word">Dog</div>
+            <div class="pronunciation">/dɒɡ/</div>
+            <div class="translation">狗</div>
+            <div class="example">
+                The <span style="color: #FF6F00">dog</span> wags its tail happily.<br>
+                小狗快乐地摇着尾巴
+            </div>
+        </div>
+
+        <div class="word-card" style="background-color: #E8F5E9">
+            <div class="emoji">🐱</div>
+            <div class="word">Cat</div>
+            <div class="pronunciation">/kæt/</div>
+            <div class="translation">猫</div>
+            <div class="example">
+                The <span style="color: #43A047">cat</span> is sleeping in the sun.<br>
+                猫咪在阳光下睡觉
+            </div>
+        </div>
+
+        <div class="word-card" style="background-color: #FBE9E7">
+            <div class="emoji">🐰</div>
+            <div class="word">Rabbit</div>
+            <div class="pronunciation">/ˈræbɪt/</div>
+            <div class="translation">兔子</div>
+            <div class="example">
+                The <span style="color: #FF5722">rabbit</span> hops in the garden.<br>
+                兔子在花园里蹦蹦跳跳
+            </div>
+        </div>
+
+        <div class="word-card" style="background-color: #E3F2FD">
+            <div class="emoji">🐧</div>
+            <div class="word">Penguin</div>
+            <div class="pronunciation">/ˈpeŋɡwɪn/</div>
+            <div class="translation">企鹅</div>
+            <div class="example">
+                The <span style="color: #2196F3">penguin</span> slides on the ice.<br>
+                企鹅在冰面上滑行
+            </div>
+        </div>
+    </div>
+</body>
+</html>

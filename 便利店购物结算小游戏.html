@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>超全便利店</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", sans-serif;
+      background: linear-gradient(to bottom, #ffecd2, #fcb69f);
+    }
+    h1 {
+      text-align: center;
+      font-size: 3em;
+      background: #ff6f61;
+      color: white;
+      margin: 0;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .container {
+      display: flex;
+      padding: 20px;
+    }
+    .sidebar {
+      width: 220px;
+      background: #fff7e6;
+      border-radius: 15px;
+      padding: 15px;
+      margin-right: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .sidebar h3 {
+      text-align: center;
+    }
+    .selected-list {
+      margin-top: 10px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .store {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .item {
+      background: #ffe4b5;
+      border-radius: 15px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .item:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+    }
+    .item img {
+      width: 80px;
+      height: 80px;
+    }
+    .checkout {
+      text-align: center;
+      margin: 20px;
+    }
+    .checkout button {
+      padding: 12px 24px;
+      font-size: 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+    .checkout button:hover {
+      background: #218838;
+    }
+    .hidden { display: none; }
+    .bill {
+      padding: 20px;
+      text-align: center;
+      background: #fff7e6;
+      margin: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .bill table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 70%;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .bill th, .bill td {
+      border: 1px solid #333;
+      padding: 10px;
+    }
+    .bag {
+      width: 120px;
+      margin: 20px auto;
+      animation: bag-shake 0.5s ease;
+    }
+    @keyframes bag-shake {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      50% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
+      100% { transform: rotate(0deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>超全便利店</h1>
+  <div class="container" id="shopPage">
+    <div class="sidebar">
+      <h3>提示</h3>
+      <p id="tip">您好，想要买点什么？</p>
+      <h3>🛒 已选商品</h3>
+      <div class="selected-list" id="selectedList"></div>
+    </div>
+    <div class="store" id="store"></div>
+  </div>
+  <div class="checkout">
+    <button onclick="goToCheckout()">选好了</button>
+  </div>
+
+  <!-- 结算页面 -->
+  <div id="checkoutPage" class="hidden">
+    <div class="bill">
+      <h2>🧾 订单小票</h2>
+      <table id="billTable">
+        <tr><th>商品</th><th>价格</th></tr>
+      </table>
+      <p>请计算总价并填入：</p>
+      <input type="number" id="answer" placeholder="请输入总价">
+      <button onclick="checkAnswer()">提交</button>
+      <div id="result"></div>
+      <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="袋子" class="bag hidden" id="bag">
+    </div>
+  </div>
+
+  <!-- 音效 -->
+  <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+  <audio id="successSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+  <audio id="packSound" src="https://www.soundjay.com/misc/sounds/bag-rustle-1.mp3"></audio>
+
+  <script>
+    // 商品数据
+    const items = [
+      { name: "面包", price: 5, img: "https://cdn-icons-png.flaticon.com/512/1046/1046784.png" },
+      { name: "牛奶", price: 6, img: "https://cdn-icons-png.flaticon.com/512/1046/1046786.png" },
+      { name: "饼干", price: 4, img: "https://cdn-icons-png.flaticon.com/512/1046/1046785.png" },
+      { name: "果汁", price: 7, img: "https://cdn-icons-png.flaticon.com/512/1046/1046788.png" },
+      { name: "薯片", price: 8, img: "https://cdn-icons-png.flaticon.com/512/1046/1046787.png" },
+      { name: "冰淇淋", price: 10, img: "https://cdn-icons-png.flaticon.com/512/1046/1046783.png" },
+      { name: "糖果", price: 3, img: "https://cdn-icons-png.flaticon.com/512/1046/1046792.png" },
+      { name: "热狗", price: 9, img: "https://cdn-icons-png.flaticon.com/512/1046/1046789.png" },
+      { name: "咖啡", price: 12, img: "https://cdn-icons-png.flaticon.com/512/1046/1046782.png" },
+      { name: "苹果", price: 4, img: "https://cdn-icons-png.flaticon.com/512/415/415733.png" },
+      { name: "香蕉", price: 5, img: "https://cdn-icons-png.flaticon.com/512/415/415734.png" },
+      { name: "草莓", price: 6, img: "https://cdn-icons-png.flaticon.com/512/415/415735.png" },
+      { name: "披萨", price: 15, img: "https://cdn-icons-png.flaticon.com/512/1046/1046781.png" },
+      { name: "汉堡", price: 14, img: "https://cdn-icons-png.flaticon.com/512/1046/1046780.png" },
+      { name: "薯条", price: 7, img: "https://cdn-icons-png.flaticon.com/512/1046/1046787.png" },
+      { name: "奶茶", price: 9, img: "https://cdn-icons-png.flaticon.com/512/415/415774.png" },
+      { name: "可乐", price: 6, img: "https://cdn-icons-png.flaticon.com/512/415/415776.png" },
+      { name: "巧克力", price: 8, img: "https://cdn-icons-png.flaticon.com/512/415/415771.png" }
+    ];
+
+    let cart = [];
+
+    const storeDiv = document.getElementById("store");
+    const selectedList = document.getElementById("selectedList");
+    const clickSound = document.getElementById("clickSound");
+    const successSound = document.getElementById("successSound");
+    const packSound = document.getElementById("packSound");
+
+    // 渲染商品
+    items.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `<img src="${item.img}"><p>${item.name}</p><p>${item.price}元</p>`;
+      div.onclick = () => addToCart(item);
+      storeDiv.appendChild(div);
+    });
+
+    // 添加商品到购物车
+    function addToCart(item) {
+      cart.push(item);
+      clickSound.play();
+      updateCartUI();
+      document.getElementById("tip").innerText = "已添加 " + item.name + "！";
+    }
+
+    // 更新购物车UI
+    function updateCartUI() {
+      selectedList.innerHTML = "";
+      cart.forEach(it => {
+        const p = document.createElement("p");
+        p.innerText = it.name + " - " + it.price + "元";
+        selectedList.appendChild(p);
+      });
+    }
+
+    // 跳转到结算页面
+    function goToCheckout() {
+      document.getElementById("shopPage").classList.add("hidden");
+      document.querySelector(".checkout").classList.add("hidden");
+      document.getElementById("checkoutPage").classList.remove("hidden");
+
+      const billTable = document.getElementById("billTable");
+      billTable.innerHTML = "<tr><th>商品</th><th>价格</th></tr>";
+      cart.forEach(it => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${it.name}</td><td>${it.price}</td>`;
+        billTable.appendChild(row);
+      });
+    }
+
+    // 验证总价
+    function checkAnswer() {
+      const total = cart.reduce((sum, it) => sum + it.price, 0);
+      const answer = parseInt(document.getElementById("answer").value);
+      const resultDiv = document.getElementById("result");
+      if (answer === total) {
+        resultDiv.innerHTML = "<p style='color:green'>✅ 正确！总价是 " + total + " 元</p>";
+        successSound.play();
+        const bag = document.getElementById("bag");
+        bag.classList.remove("hidden");
+        packSound.play();
+      } else {
+        resultDiv.innerHTML = "<p style='color:red'>❌ 错误！正确答案是 " + total + " 元</p>";
+      }
+    }
+  </script>
+</body>
+</html>

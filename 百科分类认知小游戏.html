@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儿童认知分类游戏</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka One', 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #a1c4fd 100%);
+            padding: 20px;
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+            border: 4px solid white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+        
+        .instructions {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .upload-section {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 10px;
+            border: 3px dashed #36d1dc;
+            box-shadow: 0 5px 15px rgba(54, 209, 220, 0.3);
+        }
+        
+        .upload-section h3 {
+            color: #36d1dc;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .upload-section button {
+            background: rgba(54, 209, 220, 0.3); /* 弱化的背景色 */
+            color: #36d1dc;
+            border: 2px solid #36d1dc;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-section button:hover {
+            transform: translateY(-3px);
+            background: rgba(54, 209, 220, 0.5);
+            box-shadow: 0 4px 10px rgba(54, 209, 220, 0.3);
+        }
+        
+        .image-pool {
+            background: linear-gradient(135deg, #fffacd 0%, #fff176 100%);
+            padding: 25px;
+            border-radius: 20px;
+            min-height: 200px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 8px 20px rgba(255, 179, 71, 0.3);
+            border: 4px solid white;
+        }
+        
+        .draggable-item {
+            font-size: 3.5rem;
+            cursor: grab;
+            padding: 15px;
+            border-radius: 15px;
+            /* 移除白色背景 */
+            transition: all 0.3s ease;
+            user-select: none;
+            transform-style: preserve-3d;
+        }
+        
+        .draggable-item:hover {
+            transform: scale(1.15) rotate(5deg);
+            text-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        
+        .draggable-item.dragging {
+            opacity: 0.7;
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+        
+        .pockets-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .pocket {
+            flex: 1;
+            min-width: 230px;
+            min-height: 270px;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            border: 4px solid white;
+            transform-style: preserve-3d;
+        }
+        
+        .pocket:hover {
+            transform: translateY(-5px);
+        }
+        
+        .pocket-header {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .pocket-content {
+            flex-grow: 1;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 15px;
+            min-height: 190px;
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 口袋内的元素添加白色背景 */
+        .pocket-content .draggable-item {
+            background-color: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .pocket-highlight {
+            transform: scale(1.08) translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        }
+        
+        .pocket-correct {
+            animation: correct-flash 1s ease;
+        }
+        
+        .pocket-incorrect {
+            animation: incorrect-flash 1s ease;
+        }
+        
+        @keyframes correct-flash {
+            0%, 100% { background-color: normal; }
+            50% { background-color: #90EE90; }
+        }
+        
+        @keyframes incorrect-flash {
+            0%, 100% { background-color: normal; }
+            50% { background-color: #FFCCCB; }
+        }
+        
+        #fruit-pocket {
+            background: linear-gradient(135deg, #FF9A8B 0%, #FF6A88 100%);
+        }
+        
+        #vegetable-pocket {
+            background: linear-gradient(135deg, #6DD5A7 0%, #4AC29A 100%);
+        }
+        
+        #vehicle-pocket {
+            background: linear-gradient(135deg, #6BB5FF 0%, #4A90E2 100%);
+        }
+        
+        #animal-pocket {
+            background: linear-gradient(135deg, #FFD76E 0%, #FFC850 100%);
+        }
+        
+        .completion-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .completion-message.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .message-content {
+            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+            padding: 50px 70px;
+            border-radius: 25px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            transform: scale(0.8) rotate(-5deg);
+            transition: transform 0.5s ease;
+            border: 5px solid white;
+            max-width: 90%;
+        }
+        
+        .completion-message.show .message-content {
+            transform: scale(1) rotate(0deg);
+        }
+        
+        .message-content h2 {
+            font-size: 4rem;
+            margin-bottom: 25px;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .message-content p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+        }
+        
+        .reset-button {
+            background: rgba(255, 65, 108, 0.3); /* 弱化的背景色 */
+            color: #FF416C;
+            border: 2px solid #FF416C;
+            padding: 18px 45px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .reset-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(255, 65, 108, 0.5);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.3);
+        }
+        
+        .reset-button:active {
+            transform: translateY(0);
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @media (max-width: 768px) {
+            .pockets-container {
+                flex-direction: column;
+            }
+            
+            .pocket {
+                min-width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .message-content h2 {
+                font-size: 2.8rem;
+            }
+            
+            .message-content {
+                padding: 30px;
+            }
+            
+            .draggable-item {
+                font-size: 2.8rem;
+                padding: 12px;
+            }
+        }
+        
+        .candy-decoration {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            opacity: 0.7;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 装饰性糖果元素 -->
+    <div class="candy-decoration" style="top: 10%; left: 5%; background: #FF6B6B;"></div>
+    <div class="candy-decoration" style="top: 15%; right: 8%; background: #36D1DC;"></div>
+    <div class="candy-decoration" style="bottom: 20%; left: 7%; background: #FFD76E;"></div>
+    <div class="candy-decoration" style="bottom: 15%; right: 6%; background: #6DD5A7;"></div>
+    
+    <div class="container">
+        <header class="floating">
+            <h1>🎮 认知分类挑战 🍬</h1>
+            <p class="instructions">将元素拖到正确的分类口袋中！挑战分类吧！</p>
+        </header>
+        
+        <div class="upload-section">
+            <h3>🎨 上传自己的图片（可选）</h3>
+            <input type="file" id="image-upload" accept="image/*" multiple>
+            <button onclick="resetGame()">🔄 重新开始</button>
+        </div>
+        
+        <div class="image-pool" id="image-pool">
+            <!-- 可拖拽元素将由JavaScript动态生成 -->
+        </div>
+        
+        <div class="pockets-container">
+            <div class="pocket floating" id="fruit-pocket">
+                <div class="pocket-header">水果</div>
+                <div class="pocket-content" id="fruit-content"></div>
+            </div>
+            
+            <div class="pocket floating" id="vegetable-pocket">
+                <div class="pocket-header">蔬菜</div>
+                <div class="pocket-content" id="vegetable-content"></div>
+            </div>
+            
+            <div class="pocket floating" id="vehicle-pocket">
+                <div class="pocket-header">交通工具</div>
+                <div class="pocket-content" id="vehicle-content"></div>
+            </div>
+            
+            <div class="pocket floating" id="animal-pocket">
+                <div class="pocket-header">动物</div>
+                <div class="pocket-content" id="animal-content"></div>
+            </div>
+        </div>
+        
+        <div class="completion-message" id="completion-message">
+            <div class="message-content">
+                <h2>🎉 恭喜你！ 🎉</h2>
+                <p>你成功完成了所有分类！太棒了！</p>
+                <button class="reset-button" onclick="resetGame()">再玩一次</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏数据
+        const categories = {
+            fruit: {
+                name: "水果",
+                elements: ["🍓", "🍉", "🍊", "🍎", "🍌", "🍍", "🍒", "🍇", "🍐"],
+                pocketId: "fruit-content"
+            },
+            vegetable: {
+                name: "蔬菜",
+                elements: ["🍆", "🥒", "🥬", "🥔", "🎃", "🌶️", "🥕", "🧅", "🥦"],
+                pocketId: "vegetable-content"
+            },
+            vehicle: {
+                name: "交通工具",
+                elements: ["🚗", "🚌", "🛵", "✈️", "🚆", "🚅", "⛴️", "🛴", "🚎"],
+                pocketId: "vehicle-content"
+            },
+            animal: {
+                name: "动物",
+                elements: ["🐒", "🦒", "🐅", "🐫", "🦘", "🦌", "🐕", "🐖", "🐈", "🐓"],
+                pocketId: "animal-content"
+            }
+        };
+
+        // 音效函数
+        function playSuccessSound() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = context.createOscillator();
+            const gainNode = context.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(523.25, context.currentTime); // C5
+            oscillator.frequency.setValueAtTime(659.25, context.currentTime + 0.1); // E5
+            oscillator.frequency.setValueAtTime(783.99, context.currentTime + 0.2); // G5
+            
+            gainNode.gain.setValueAtTime(0.5, context.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(context.destination);
+            
+            oscillator.start();
+            oscillator.stop(context.currentTime + 0.5);
+        }
+        
+        function playErrorSound() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = context.createOscillator();
+            const gainNode = context.createGain();
+            
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(196.00, context.currentTime); // G3
+            oscillator.frequency.setValueAtTime(174.61, context.currentTime + 0.1); // F3
+            oscillator.frequency.setValueAtTime(155.56, context.currentTime + 0.2); // D#3
+            
+            gainNode.gain.setValueAtTime(0.5, context.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(context.destination);
+            
+            oscillator.start();
+            oscillator.stop(context.currentTime + 0.5);
+        }
+
+        // 初始化游戏
+        function initGame() {
+            const imagePool = document.getElementById('image-pool');
+            imagePool.innerHTML = '';
+            
+            // 清空所有口袋内容
+            document.getElementById('fruit-content').innerHTML = '';
+            document.getElementById('vegetable-content').innerHTML = '';
+            document.getElementById('vehicle-content').innerHTML = '';
+            document.getElementById('animal-content').innerHTML = '';
+            
+            // 从每个类别中随机选择5个元素
+            let selectedElements = [];
+            
+            for (const category in categories) {
+                // 复制数组以避免修改原始数据
+                const elementsCopy = [...categories[category].elements];
+                
+                // 随机打乱顺序
+                elementsCopy.sort(() => Math.random() - 0.5);
+                
+                // 选择前5个元素
+                const selectedFromCategory = elementsCopy.slice(0, 5);
+                
+                // 添加到总数组
+                selectedFromCategory.forEach(element => {
+                    selectedElements.push({ element, category });
+                });
+            }
+            
+            // 随机打乱所有元素的顺序
+            selectedElements.sort(() => Math.random() - 0.5);
+            
+            // 创建可拖拽元素
+            selectedElements.forEach(item => {
+                const draggableItem = document.createElement('div');
+                draggableItem.className = 'draggable-item floating';
+                draggableItem.textContent = item.element;
+                draggableItem.draggable = true;
+                draggableItem.dataset.category = item.category;
+                
+                // 添加拖拽事件监听器
+                draggableItem.addEventListener('dragstart', handleDragStart);
+                draggableItem.addEventListener('dragend', handleDragEnd);
+                
+                imagePool.appendChild(draggableItem);
+            });
+            
+            // 初始化口袋
+            initPockets();
+            
+            // 隐藏完成消息
+            document.getElementById('completion-message').classList.remove('show');
+        }
+        
+        // 初始化口袋
+        function initPockets() {
+            const pockets = document.querySelectorAll('.pocket');
+            
+            pockets.forEach(pocket => {
+                // 添加拖拽事件监听器
+                pocket.addEventListener('dragover', handleDragOver);
+                pocket.addEventListener('dragenter', handleDragEnter);
+                pocket.addEventListener('dragleave', handleDragLeave);
+                pocket.addEventListener('drop', handleDrop);
+            });
+        }
+        
+        // 处理拖拽开始
+        function handleDragStart(e) {
+            this.classList.add('dragging');
+            this.classList.remove('floating');
+            e.dataTransfer.setData('text/plain', this.dataset.category);
+        }
+        
+        // 处理拖拽结束
+        function handleDragEnd() {
+            this.classList.remove('dragging');
+            this.classList.add('floating');
+        }
+        
+        // 处理拖拽经过
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        // 处理拖拽进入
+        function handleDragEnter(e) {
+            e.preventDefault();
+            this.classList.add('pocket-highlight');
+        }
+        
+        // 处理拖拽离开
+        function handleDragLeave() {
+            this.classList.remove('pocket-highlight');
+        }
+        
+        // 处理放置
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('pocket-highlight');
+            
+            const draggedCategory = e.dataTransfer.getData('text/plain');
+            const pocketId = this.id.replace('-pocket', '');
+            const isCorrect = draggedCategory === pocketId;
+            
+            if (isCorrect) {
+                // 正确分类
+                const draggedItem = document.querySelector('.dragging');
+                draggedItem.classList.remove('floating');
+                this.querySelector('.pocket-content').appendChild(draggedItem);
+                
+                // 给口袋中的元素添加白色背景
+                draggedItem.style.backgroundColor = 'white';
+                draggedItem.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.15)';
+                
+                // 视觉反馈
+                this.classList.add('pocket-correct');
+                setTimeout(() => this.classList.remove('pocket-correct'), 1000);
+                
+                // 播放成功音效
+                playSuccessSound();
+                
+                // 检查游戏是否完成
+                checkGameCompletion();
+            } else {
+                // 错误分类
+                this.classList.add('pocket-incorrect');
+                setTimeout(() => this.classList.remove('pocket-incorrect'), 1000);
+                
+                // 播放错误音效
+                playErrorSound();
+            }
+        }
+        
+        // 检查游戏是否完成
+        function checkGameCompletion() {
+            const imagePool = document.getElementById('image-pool');
+            if (imagePool.children.length === 0) {
+                // 所有元素都已分类
+                const completionMessage = document.getElementById('completion-message');
+                setTimeout(() => {
+                    completionMessage.classList.add('show');
+                }, 500);
+            }
+        }
+        
+        // 重置游戏
+        function resetGame() {
+            initGame();
+        }
+        
+        // 页面加载时初始化游戏
+        window.onload = initGame;
+        
+        // 添加更多漂浮的糖果装饰
+        function addCandyDecorations() {
+            const body = document.body;
+            for (let i = 0; i < 10; i++) {
+                const candy = document.createElement('div');
+                candy.className = 'candy-decoration';
+                candy.style.width = Math.random() * 30 + 10 + 'px';
+                candy.style.height = candy.style.width;
+                candy.style.left = Math.random() * 100 + '%';
+                candy.style.top = Math.random() * 100 + '%';
+                candy.style.background = `hsl(${Math.random() * 360}, 70%, 70%)`;
+                candy.style.opacity = Math.random() * 0.5 + 0.3;
+                body.appendChild(candy);
+            }
+        }
+        
+        addCandyDecorations();
+    </script>
+</body>
+</html>

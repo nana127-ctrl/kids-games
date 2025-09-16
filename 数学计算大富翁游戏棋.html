@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>数字加减大富翁（100以内）</title>
+<style>
+  /* --------------------------
+     视觉与布局（卡通风格）
+     -------------------------- */
+  :root{
+    --bg1:#fffbf0;
+    --accent:#ffd166;
+    --card:#fff6e0;
+    --muted:#6b7280;
+    --board-bg: linear-gradient(180deg,#fefefe,#fff0eb);
+    --token-size:28px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: "Noto Sans SC","Segoe UI",Roboto,"Helvetica Neue",Arial;
+    background: linear-gradient(180deg,#e0f7ff,#fffbe6);
+    display:flex;
+    justify-content:center;
+    padding:18px;
+  }
+  .wrap{
+    width:100%;
+    max-width:1100px;
+    background:var(--board-bg);
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 14px 40px rgba(2,6,23,0.12);
+  }
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .title{display:flex;align-items:center;gap:12px}
+  .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#ffd6e8,#ffd6b8);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px}
+  h1{margin:0;font-size:20px;color:#0b2540}
+  p.lead{margin:0;color:var(--muted);font-size:13px}
+
+  /* 控件区 */
+  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{background:linear-gradient(180deg,#ffb4b4,#ff7aa2);border:0;padding:8px 12px;border-radius:10px;color:white;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(255,122,162,0.14)}
+  .btn.secondary{background:linear-gradient(180deg,#6cace4,#4aa3f0)}
+  .select-players{background:transparent;border:2px dashed rgba(0,0,0,0.08);padding:6px;border-radius:10px;color:#0b2540}
+
+  /* 主体布局： 左侧棋盘  右侧信息面板 */
+  .main{display:flex;gap:16px}
+  .board-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px}
+
+  /* 棋盘容器：用 grid 布局模拟矩形闭合路径 */
+  .board{
+    width:100%;
+    max-width:720px;
+    aspect-ratio: 1.2 / 1;
+    background: linear-gradient(180deg,#fff,#fff8f0);
+    border-radius:14px;
+    padding:18px;
+    box-shadow:inset 0 6px 16px rgba(0,0,0,0.03);
+    position:relative;
+  }
+
+  /* 我们用定位的 20 个椭圆格子 — 样式统一 */
+  .cell{
+    position:absolute;
+    width:90px;height:56px;
+    background: linear-gradient(180deg,#fff7e6,#fff3da);
+    border:3px solid rgba(255,173,84,0.4);
+    border-radius:999px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    box-shadow:0 6px 16px rgba(0,0,0,0.06);
+    padding:4px;
+    font-weight:700;
+  }
+  .cell .idx{font-size:12px;color:var(--muted);}
+  .cell .label{font-size:14px;color:#0b2540}
+
+  /* token（玩家旗子）在格子里的小圆点 */
+  .tokens {display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;justify-content:center}
+  .token{
+    width:var(--token-size);height:var(--token-size);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:16px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.12);
+  }
+  /* player colors */
+  .p0{background:#ff6b6b;color:white} /* red */
+  .p1{background:#4ade80;color:white} /* green */
+  .p2{background:#60a5fa;color:white} /* blue */
+  .p3{background:#facc15;color:#1f2937} /* yellow */
+
+  /* 右侧面板 */
+  .side{
+    width:320px;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .panel{background:var(--card);border-radius:12px;padding:10px;box-shadow:0 8px 20px rgba(2,6,23,0.04)}
+  .panel h3{margin:0 0 8px 0;font-size:15px;color:#0b2540}
+  .players-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+  /* 当前回合和骰子 */
+  .current {display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .dice{
+    width:80px;height:80px;border-radius:14px;background:linear-gradient(180deg,#fff,#ffe8ec);
+    display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;border:4px solid #ffd6d6;cursor:pointer;
+    box-shadow:0 10px 24px rgba(255,122,162,0.12);
+  }
+  .dice:active{transform:translateY(2px)}
+
+  .log{height:160px;overflow:auto;padding:6px;border-radius:8px;background:#fff7f0;font-size:13px;color:#333}
+  .log-item{margin-bottom:6px}
+
+  /* 答题弹窗（简单内嵌面板） */
+  .question-panel{display:flex;flex-direction:column;gap:8px;align-items:center}
+  .eq{font-size:20px;font-weight:800;color:#0b2540}
+  .answer-input{width:120px;padding:8px;border-radius:8px;border:2px solid rgba(0,0,0,0.08);text-align:center;font-size:16px}
+
+  /* 胜利覆盖 */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:50}
+  .win-box{background:linear-gradient(180deg,#fff0f5,#fff7e6);padding:24px;border-radius:14px;text-align:center}
+  .win-box h2{margin:0 0 6px 0;color:#0b2540}
+
+  /* 布局具体 cell 绝对位置（百分比定位） */
+  /* top row 0..5 */
+  #c0{left:6%; top:6%}
+  #c1{left:22%; top:6%}
+  #c2{left:38%; top:6%}
+  #c3{left:54%; top:6%}
+  #c4{left:70%; top:6%}
+  #c5{left:86%; top:6%}
+  /* right column 6..9 */
+  #c6{left:86%; top:22%}
+  #c7{left:86%; top:38%}
+  #c8{left:86%; top:54%}
+  #c9{left:86%; top:70%}
+  /* bottom row 10..15 (right->left) */
+  #c10{left:70%; top:86%}
+  #c11{left:54%; top:86%}
+  #c12{left:38%; top:86%}
+  #c13{left:22%; top:86%}
+  #c14{left:6%; top:86%}
+  #c15{left:6%; top:70%}
+  /* left column 16..19 (bottom->top) */
+  #c16{left:6%; top:54%}
+  #c17{left:6%; top:38%}
+  #c18{left:6%; top:22%}
+  #c19{left:22%; top:22%}
+
+  /* 小屏适配 */
+  @media (max-width:980px){
+    .main{flex-direction:column}
+    .side{width:100%}
+    .board{max-width:100%}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <div class="logo">🎲</div>
+        <div>
+          <h1>数学计算大富翁（100以内加减法）</h1>
+          <p class="lead">投骰子 → 答算式 → 前进。练习心算、加减法！</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="select-players" id="playerSelect">
+          玩家数量：
+          <button class="btn secondary" id="players2">2</button>
+          <button class="btn secondary" id="players3">3</button>
+          <button class="btn secondary" id="players4">4</button>
+        </div>
+        <button class="btn" id="startBtn">开始游戏</button>
+      </div>
+    </header>
+
+    <div class="main">
+      <!-- 左侧棋盘 -->
+      <div class="board-col">
+        <div class="board" id="board">
+          <!-- 生成 20 个格子 -->
+          <!-- each cell contains index label and tokens area -->
+          <!-- we place them absolutely via CSS -->
+          <script>
+            // generate 20 cell placeholders
+          </script>
+          <!-- We'll insert cells via JS for clarity -->
+        </div>
+      </div>
+
+      <!-- 右侧信息面板 -->
+      <aside class="side">
+        <div class="panel">
+          <h3>玩家信息</h3>
+          <div class="players-row" id="playersRow">
+            <!-- player badges generated by JS -->
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>当前回合</h3>
+          <div class="current">
+            <div id="currentPlayer" style="font-weight:800;color:#0b2540">——</div>
+            <div class="dice" id="dice" title="点击掷骰子">🎲</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>题目与输入</h3>
+          <div class="question-panel" id="questionPanel">
+            <div id="questionArea" style="min-height:44px">点击骰子掷点开始本回合</div>
+            <input class="answer-input" id="answerInput" type="number" placeholder="输入答案" />
+            <div style="display:flex;gap:8px;margin-top:6px;justify-content:center">
+              <button id="submitAnswer" class="btn">提交答案</button>
+              <button id="skipBtn" class="btn secondary">跳过</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>操作日志</h3>
+          <div class="log" id="log"></div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <!-- 胜利覆盖 -->
+  <div class="overlay" id="overlay">
+    <div class="win-box">
+      <h2 id="winText">玩家 X 获胜！</h2>
+      <p>太棒了！你做得很好 😄</p>
+      <button class="btn" id="playAgain">再玩一次</button>
+    </div>
+  </div>
+
+<script>
+/* ===============================
+   数学计算大富翁 — 完整脚本
+   注释清晰，便于维护扩展
+   =============================== */
+
+// ----- 全局状态 -----
+const STATE = {
+  playersCount: 2,
+  players: [],            // {id, emoji, pos}
+  currentPlayerIndex: 0,
+  boardSize: 20,          // cells 0..19 (0 起点, 19 终点)
+  diceValue: 0,
+  awaitingAnswer: false,
+  currentQuestion: null,  // {a,b,op,answer}
+  gameStarted: false
+};
+
+// DOM refs
+const boardEl = document.getElementById('board');
+const playersRow = document.getElementById('playersRow');
+const startBtn = document.getElementById('startBtn');
+const players2 = document.getElementById('players2');
+const players3 = document.getElementById('players3');
+const players4 = document.getElementById('players4');
+const currentPlayerEl = document.getElementById('currentPlayer');
+const diceEl = document.getElementById('dice');
+const questionArea = document.getElementById('questionArea');
+const answerInput = document.getElementById('answerInput');
+const submitAnswerBtn = document.getElementById('submitAnswer');
+const skipBtn = document.getElementById('skipBtn');
+const logEl = document.getElementById('log');
+const overlay = document.getElementById('overlay');
+const winText = document.getElementById('winText');
+const playAgainBtn = document.getElementById('playAgain');
+
+// 简单音效（使用公开短音效）
+const audioDrop = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3');
+const audioSuccess = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-quick-win-video-game-notification-269.mp3');
+const audioFail = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-failure-arcade-alert-notification-240.mp3');
+
+// player emojis / colors (consistent order)
+const PLAYER_EMOJIS = ['🟥','🟩','🟦','🟨']; // displayed inside colored token circles (colors via classes p0..p3)
+
+/* ---------------------------
+   初始化：生成 20 个格子
+   --------------------------- */
+function createBoard() {
+  boardEl.innerHTML = '';
+  for (let i=0;i<STATE.boardSize;i++){
+    const c = document.createElement('div');
+    c.className='cell';
+    c.id = 'c'+i;
+    // content: index + label
+    c.innerHTML = `<div class="idx">#${i}</div><div class="label">${i===0?'起点':(i===STATE.boardSize-1?'终点':'格子')}</div><div class="tokens" data-cell="${i}"></div>`;
+    boardEl.appendChild(c);
+  }
+}
+// call once
+createBoard();
+
+/* ---------------------------
+   玩家选择 & 初始化数据
+   --------------------------- */
+function setupPlayers(count){
+  STATE.playersCount = count;
+  STATE.players = [];
+  for (let i=0;i<count;i++){
+    STATE.players.push({id:i, emoji:PLAYER_EMOJIS[i], pos:0});
+  }
+  renderPlayersRow();
+  renderAllTokens();
+  log('系统：已选择 ' + count + ' 名玩家（轮流游戏）');
+}
+
+/* 渲染右侧玩家信息区 */
+function renderPlayersRow(){
+  playersRow.innerHTML = '';
+  STATE.players.forEach(p=>{
+    const div = document.createElement('div');
+    div.style.display='flex';
+    div.style.alignItems='center';
+    div.style.gap='8px';
+    div.innerHTML = `<div class="token p${p.id}">${p.emoji}</div><div>玩家 ${p.id+1}</div>`;
+    playersRow.appendChild(div);
+  });
+}
+
+/* 在每个格子里渲染当前处于该格的玩家 token（多玩家可堆叠） */
+function renderAllTokens(){
+  // clear all tokens
+  document.querySelectorAll('.tokens').forEach(t=> t.innerHTML = '');
+  STATE.players.forEach(p=>{
+    const container = document.querySelector(`.tokens[data-cell="${p.pos}"]`);
+    if (container){
+      const span = document.createElement('div');
+      span.className = `token p${p.id}`;
+      span.textContent = p.emoji;
+      span.title = `玩家 ${p.id+1}`;
+      container.appendChild(span);
+    }
+  });
+}
+
+/* ---------------------------
+   题库生成（100 内加减法）
+   返回 {a,b,op,answer,text}
+   --------------------------- */
+function genQuestion(){
+  // choose op +/-
+  const op = Math.random() < 0.5 ? '+' : '-';
+  let a,b;
+  if (op === '+'){
+    // choose a,b such that <=100
+    a = randInt(0,100);
+    b = randInt(0,100-a);
+  } else {
+    // subtraction ensure non-negative: pick a>=b
+    a = randInt(0,100);
+    b = randInt(0,a);
+  }
+  const answer = op === '+' ? a + b : a - b;
+  return {a,b,op,answer, text: `${a} ${op} ${b} = ?`};
+}
+
+/* 辅助随机整数（含两端） */
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+/* ---------------------------
+   游戏控制：开始 / 掷骰子 / 答题
+   --------------------------- */
+players2.addEventListener('click', ()=> selectPlayers(2));
+players3.addEventListener('click', ()=> selectPlayers(3));
+players4.addEventListener('click', ()=> selectPlayers(4));
+startBtn.addEventListener('click', startGame);
+diceEl.addEventListener('click', onDiceClick);
+submitAnswerBtn.addEventListener('click', submitAnswer);
+skipBtn.addEventListener('click', skipAnswer);
+playAgainBtn.addEventListener('click', resetGame);
+
+/* 选择玩家数量并准备（UI 高亮可扩展） */
+function selectPlayers(n){
+  setupPlayers(n);
+}
+
+/* 初始默认 2 人 */
+setupPlayers(2);
+
+/* 开始游戏：重置位置并设置当前玩家 */
+function startGame(){
+  STATE.players.forEach(p=> p.pos = 0);
+  STATE.currentPlayerIndex = 0;
+  STATE.gameStarted = true;
+  STATE.awaitingAnswer = false;
+  STATE.currentQuestion = null;
+  renderAllTokens();
+  log('游戏开始！玩家 1 先手。');
+  updateCurrentPlayerUI();
+  questionArea.textContent = '请掷骰子开始你的回合';
+  overlay.style.display = 'none';
+}
+
+/* 更新顶部当前玩家显示 */
+function updateCurrentPlayerUI(){
+  const p = STATE.players[STATE.currentPlayerIndex];
+  currentPlayerEl.textContent = `玩家 ${p.id+1} ${p.emoji}`;
+}
+
+/* 掷骰子点击事件 */
+function onDiceClick(){
+  if (!STATE.gameStarted) { alert('请先点击“开始游戏”'); return; }
+  if (STATE.awaitingAnswer) { alert('请先回答当前题目或点击跳过'); return; }
+  // roll 1-6
+  const value = randInt(1,6);
+  STATE.diceValue = value;
+  // show animation: briefly show number on dice
+  diceEl.textContent = value;
+  diceEl.style.transform = 'scale(1.05)';
+  setTimeout(()=> diceEl.style.transform = '', 200);
+  // generate question and wait for answer
+  STATE.currentQuestion = genQuestion();
+  STATE.awaitingAnswer = true;
+  // show question
+  questionArea.innerHTML = `<div class="eq">题目： ${STATE.currentQuestion.text}</div><div style="color:${getComputedStyle(document.documentElement).getPropertyValue('--muted')};font-size:12px">（答对可前进 ${value} 步）</div>`;
+  answerInput.value = '';
+  answerInput.focus();
+  log(`玩家 ${STATE.currentPlayerIndex+1} 掷得 ${value} 点；出题：${STATE.currentQuestion.text}`);
+}
+
+/* 提交答案 */
+function submitAnswer(){
+  if (!STATE.awaitingAnswer || !STATE.currentQuestion) return;
+  const raw = answerInput.value.trim();
+  if (raw === '') { alert('请输入答案'); return; }
+  const num = Number(raw);
+  const correct = (num === STATE.currentQuestion.answer);
+  const curPlayer = STATE.players[STATE.currentPlayerIndex];
+
+  if (correct){
+    // 正确：前进 dice 步
+    const oldPos = curPlayer.pos;
+    curPlayer.pos = curPlayer.pos + STATE.diceValue;
+    if (curPlayer.pos >= STATE.boardSize - 1){
+      // 达到或超过终点，胜利
+      curPlayer.pos = STATE.boardSize - 1;
+      renderAllTokens();
+      renderMoveResult(curPlayer, true, oldPos, curPlayer.pos);
+      win(curPlayer);
+      return;
+    }
+    renderAllTokens();
+    renderMoveResult(curPlayer, true, oldPos, curPlayer.pos);
+    audioSuccess.play().catch(()=>{});
+  } else {
+    // 错误：停留原地并显示正确答案
+    renderMoveResult(curPlayer, false, curPlayer.pos, curPlayer.pos);
+    audioFail.play().catch(()=>{});
+  }
+
+  // 下一玩家
+  STATE.awaitingAnswer = false;
+  STATE.currentQuestion = null;
+  advanceToNextPlayer();
+}
+
+/* 跳过（作为放弃，视为错误） */
+function skipAnswer(){
+  if (!STATE.awaitingAnswer || !STATE.currentQuestion) return;
+  const curPlayer = STATE.players[STATE.currentPlayerIndex];
+  renderMoveResult(curPlayer, false, curPlayer.pos, curPlayer.pos);
+  STATE.awaitingAnswer = false;
+  STATE.currentQuestion = null;
+  audioFail.play().catch(()=>{});
+  advanceToNextPlayer();
+}
+
+/* 下一玩家轮 */
+function advanceToNextPlayer(){
+  STATE.currentPlayerIndex = (STATE.currentPlayerIndex + 1) % STATE.playersCount;
+  updateCurrentPlayerUI();
+  questionArea.textContent = '等待下一位玩家掷骰子';
+  diceEl.textContent = '🎲';
+}
+
+/* 显示本回合结果并输出日志 */
+function renderMoveResult(player, success, from, to){
+  const who = `玩家 ${player.id+1}`;
+  if (success){
+    log(`${who} 答对！前进 ${STATE.diceValue} 步：${from} → ${to} ✅`);
+    questionArea.innerHTML = `<div style="color:green;font-weight:700">${who} 答对啦！前进 ${STATE.diceValue} 步 ✅</div>`;
+  } else {
+    const correct = STATE.currentQuestion ? STATE.currentQuestion.answer : '（已跳过）';
+    log(`${who} 回答错误。正确答案：${correct} ❌`);
+    questionArea.innerHTML = `<div style="color:#d63031;font-weight:700">答错！正确答案：${correct} ❌</div>`;
+  }
+  // update tokens visually
+  renderAllTokens();
+}
+
+/* 胜利处理 */
+function win(player){
+  log(`🎉 玩家 ${player.id+1} 获胜！`);
+  winText.textContent = `玩家 ${player.id+1} ${player.emoji} 获得🏆！游戏胜利！`;
+  overlay.style.display = 'flex';
+  audioSuccess.play().catch(()=>{});
+  STATE.gameStarted = false;
+}
+
+/* 日志工具 */
+function log(msg){
+  const time = new Date().toLocaleTimeString();
+  const div = document.createElement('div');
+  div.className='log-item';
+  div.textContent = `[${time}] ${msg}`;
+  logEl.prepend(div);
+}
+
+/* 重置游戏 */
+function resetGame(){
+  overlay.style.display = 'none';
+  startGame();
+}
+
+/* 初始默认设置 */
+startBtn.addEventListener('click', ()=> {
+  // if not have players set, ensure at least 2
+  if (STATE.players.length < 2) setupPlayers(2);
+  startGame();
+});
+
+// 初始准备
+setupPlayers(2); // default 2 players
+questionArea.textContent = '请选择玩家数量并点击【开始游戏】';
+
+// expose reset button
+playAgainBtn.addEventListener('click', resetGame);
+
+/* =========================
+   小提示：可扩展点
+   - 可添加难度选择（更多位数 / 乘法 / 除法）
+   - 可保存排行榜 / 记录用时
+   - 可增加道具格（例如：前进两倍 / 重掷骰子）
+   ========================= */
+</script>
+</body>
+</html>

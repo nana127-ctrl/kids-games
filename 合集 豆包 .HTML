@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儿童教育小游戏集合</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        light: '#F3F4F6',
+                        dark: '#1F2937'
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .game-card-hover {
+                @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+            }
+            .btn-primary {
+                @apply bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg transition-all;
+            }
+            .section-title {
+                @apply text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-6 relative inline-block;
+            }
+            .section-title::after {
+                @apply content-[''] absolute w-1/2 h-1 bg-accent bottom-0 left-0 rounded-full;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-md fixed w-full top-0 z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-gamepad text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-dark">儿童益智游戏库</h1>
+            </div>
+            
+            <!-- 移动端菜单按钮 -->
+            <button class="md:hidden text-dark text-xl" id="menu-toggle">
+                <i class="fa fa-bars"></i>
+            </button>
+            
+            <!-- 桌面端导航 -->
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="#all-games" class="text-dark hover:text-primary transition-colors">所有游戏</a>
+                <a href="#categories" class="text-dark hover:text-primary transition-colors">游戏分类</a>
+                <a href="#about" class="text-dark hover:text-primary transition-colors">关于</a>
+            </nav>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white absolute w-full border-t" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <a href="#all-games" class="py-2 text-dark hover:text-primary transition-colors">所有游戏</a>
+                <a href="#categories" class="py-2 text-dark hover:text-primary transition-colors">游戏分类</a>
+                <a href="#about" class="py-2 text-dark hover:text-primary transition-colors">关于</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="pt-28 pb-16 bg-gradient-to-br from-primary/10 to-secondary/10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <h2 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-dark leading-tight">
+                        让学习变得<br><span class="text-primary">有趣又好玩</span>
+                    </h2>
+                    <p class="mt-4 text-gray-600 text-lg max-w-lg">
+                        精选各类儿童教育小游戏，在玩耍中学习知识，培养能力，寓教于乐的最佳选择。
+                    </p>
+                    <div class="mt-8">
+                        <a href="#all-games" class="btn-primary inline-flex items-center">
+                            开始游戏 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-5/12">
+                    <img src="https://picsum.photos/seed/education/600/400" alt="儿童游戏与学习" class="rounded-xl shadow-lg w-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 游戏分类 -->
+    <section id="categories" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="section-title">游戏分类</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">探索不同类型的教育游戏，找到最适合孩子的学习方式</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-light rounded-xl p-6 text-center game-card-hover cursor-pointer">
+                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa fa-book text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-dark">语言学习</h3>
+                    <p class="text-sm text-gray-500 mt-2">英语单词游戏</p>
+                </div>
+                
+                <div class="bg-light rounded-xl p-6 text-center game-card-hover cursor-pointer">
+                    <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa fa-calculator text-secondary text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-dark">数学计算</h3>
+                    <p class="text-sm text-gray-500 mt-2">数字与运算</p>
+                </div>
+                
+                <div class="bg-light rounded-xl p-6 text-center game-card-hover cursor-pointer">
+                    <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa fa-puzzle-piece text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-dark">逻辑思维</h3>
+                    <p class="text-sm text-gray-500 mt-2">推理与解决问题</p>
+                </div>
+                
+                <div class="bg-light rounded-xl p-6 text-center game-card-hover cursor-pointer">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa fa-paint-brush text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-dark">创意艺术</h3>
+                    <p class="text-sm text-gray-500 mt-2">涂色与创造力</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 所有游戏 -->
+    <section id="all-games" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="section-title">所有游戏</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">点击下方游戏卡片开始有趣的学习之旅</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- 游戏卡片1 -->
+                <a href="英语单词打地鼠小游戏.html" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/英语单词打地鼠小游戏.jpg" alt="英语单词打地鼠小游戏" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded">语言学习</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">英语单词打地鼠小游戏</h3>
+                            <p class="text-gray-500 text-sm flex-grow">在打地鼠的欢乐中学习英语单词</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 5-10分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片2 -->
+                <a href="侦探笔记儿童逻辑推理小游戏.HTML" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/侦探笔记儿童逻辑推理小游戏.jpg" alt="侦探笔记儿童逻辑推理小游戏" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-accent/10 text-accent text-xs font-medium px-2.5 py-0.5 rounded">逻辑思维</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">侦探笔记儿童逻辑推理小游戏</h3>
+                            <p class="text-gray-500 text-sm flex-grow">锻炼观察力和逻辑推理能力</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 10-15分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片3 -->
+                <a href="百科分类认知小游戏.html" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/百科分类认知小游戏.jpg" alt="百科分类认知小游戏" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-secondary/10 text-secondary text-xs font-medium px-2.5 py-0.5 rounded">知识认知</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">百科分类认知小游戏</h3>
+                            <p class="text-gray-500 text-sm flex-grow">认识世界万物，学习分类知识</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 8-12分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片4 -->
+                <a href="便利店购物结算小游戏.html" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/便利店购物结算小游戏.jpg" alt="便利店购物结算小游戏" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-secondary/10 text-secondary text-xs font-medium px-2.5 py-0.5 rounded">数学计算</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">便利店购物结算小游戏</h3>
+                            <p class="text-gray-500 text-sm flex-grow">模拟购物，练习计算能力</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 7-10分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片5 -->
+                <a href="舒尔特方格专注力小游戏.HTML" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/舒尔特方格专注力小游戏.jpg" alt="舒尔特方格专注力小游戏" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-accent/10 text-accent text-xs font-medium px-2.5 py-0.5 rounded">注意力训练</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">舒尔特方格专注力小游戏</h3>
+                            <p class="text-gray-500 text-sm flex-grow">提升注意力和视觉搜索能力</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 3-5分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片6 -->
+                <a href="英语单词消消乐小游戏.html" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/英语单词消消乐小游戏.jpg" alt="英语单词消消乐小游戏" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded">语言学习</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">英语单词消消乐小游戏</h3>
+                            <p class="text-gray-500 text-sm flex-grow">配对相同单词，增强记忆力</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 6-8分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片7 -->
+                <a href="分类小游戏.html" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/分类小游戏.jpg" alt="分类小游戏" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-accent/10 text-accent text-xs font-medium px-2.5 py-0.5 rounded">逻辑思维</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">分类小游戏</h3>
+                            <p class="text-gray-500 text-sm flex-grow">学习归纳分类，培养逻辑思维</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 5-7分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片8 -->
+                <a href="几何图形连连看记忆小游戏.HTML" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/几何图形连连看记忆小游戏.jpg" alt="几何图形连连看记忆小游戏" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-secondary/10 text-secondary text-xs font-medium px-2.5 py-0.5 rounded">数学几何</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">几何图形连连看记忆小游戏</h3>
+                            <p class="text-gray-500 text-sm flex-grow">认识几何图形，锻炼记忆力</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 6-9分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片9 -->
+                <a href="单词闪卡-动物.html" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/单词闪卡-动物.jpg" alt="单词闪卡-动物" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded">语言学习</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">单词闪卡-动物</h3>
+                            <p class="text-gray-500 text-sm flex-grow">通过闪卡学习动物相关英语单词</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 4-6分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片10 -->
+                <a href="单词闪卡-水果.html" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/单词闪卡-水果.jpg" alt="单词闪卡-水果" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded">语言学习</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">单词闪卡-水果</h3>
+                            <p class="text-gray-500 text-sm flex-grow">通过闪卡学习水果相关英语单词</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 4-6分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片11 -->
+                <a href="英语单词消消乐2.0 待迭代.html" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/英语单词消消乐2.0 待迭代.jpg" alt="英语单词消消乐2.0 待迭代" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5 rounded">语言学习</span>
+                                <span class="bg-orange-100 text-orange-600 text-xs font-medium px-2.5 py-0.5 rounded ml-2">新版</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">英语单词消消乐2.0 待迭代</h3>
+                            <p class="text-gray-500 text-sm flex-grow">升级版本的单词消消乐游戏</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 7-9分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片12 -->
+                <a href="数学计算大富翁游戏棋.html" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/数学计算大富翁游戏棋.jpg" alt="数学计算大富翁游戏棋" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-secondary/10 text-secondary text-xs font-medium px-2.5 py-0.5 rounded">数学计算</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">数学计算大富翁游戏棋</h3>
+                            <p class="text-gray-500 text-sm flex-grow">在大富翁游戏中练习数学计算</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 15-20分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 游戏卡片13 -->
+                <a href="简单涂色小游戏.HTML" class="block">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md game-card-hover h-full flex flex-col">
+                        <div class="h-48 overflow-hidden">
+                            <img src="images/简单涂色小游戏.jpg" alt="简单涂色小游戏" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <div class="flex items-center mb-2">
+                                <span class="bg-purple-100 text-purple-600 text-xs font-medium px-2.5 py-0.5 rounded">创意艺术</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-dark mb-2">简单涂色小游戏</h3>
+                            <p class="text-gray-500 text-sm flex-grow">自由涂色，培养创造力和审美</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs text-gray-400"><i class="fa fa-clock-o mr-1"></i> 10-15分钟</span>
+                                <span class="text-primary text-sm font-medium">开始游戏 <i class="fa fa-arrow-right ml-1"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于部分 -->
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="section-title">关于游戏库</h2>
+                <p class="text-gray-600 mt-4">
+                    这个游戏库汇集了多种专为儿童设计的教育小游戏，旨在通过有趣的互动方式帮助孩子们学习知识、培养能力。
+                    所有游戏都注重寓教于乐，让孩子们在玩耍中自然地吸收知识，提升技能。
+                </p>
+                
+                <div class="mt-12 bg-light rounded-xl p-6">
+                    <h3 class="text-xl font-bold text-dark mb-4">如何分享这个游戏库？</h3>
+                    <p class="text-gray-600 mb-4">
+                        1. 将所有游戏文件（包括本页面的index.html和所有小游戏的HTML文件）放在同一个文件夹中
+                    </p>
+                    <p class="text-gray-600 mb-4">
+                        2. 上传整个文件夹到网站托管服务，如：
+                        <ul class="list-disc list-inside mt-2 space-y-1 text-left max-w-md mx-auto">
+                            <li>GitHub Pages（免费，适合个人使用）</li>
+                            <li>Netlify 或 Vercel（提供免费计划）</li>
+                            <li>您自己的网站服务器</li>
+                        </ul>
+                    </p>
+                    <p class="text-gray-600">
+                        3. 上传完成后，您将获得一个可以访问的网址，将这个网址分享给他人即可
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa fa-gamepad text-primary text-2xl"></i>
+                        <h2 class="text-xl font-bold">儿童益智游戏库</h2>
+                    </div>
+                    <p class="text-gray-400 mt-2">让学习变得有趣又好玩</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>© 2023 儿童益智游戏库. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="fixed bottom-6 right-6 bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow-lg');
+                navbar.classList.remove('py-3', 'shadow-md');
+            } else {
+                navbar.classList.add('py-3', 'shadow-md');
+                navbar.classList.remove('py-2', 'shadow-lg');
+            }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 关闭移动菜单（如果打开）
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 返回顶部按钮
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.add('opacity-0', 'invisible');
+                backToTopButton.classList.remove('opacity-100', 'visible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
